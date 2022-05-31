@@ -53,12 +53,8 @@ export default function LoginPage({ navigation }) {
       })
         .then((res) => {
           if (res.data.status) {
-            let saveUserInfo = storeUserLogin(res.data.data)
-            // console.log('saveUserInfo', saveUserInfo);
+            storeUserLogin(res.data.data)
             navigation.navigate('HomeScreen')
-            // saveUserInfo ? navigation.navigate('HomeScreen') : setPasswordFail('Có Lỗi Hệ Thống')   
-            // console.log('ok login'); 
-            // signIn(res.data.data);
           } else {
             setPasswordFail(res.data.errors)
           }

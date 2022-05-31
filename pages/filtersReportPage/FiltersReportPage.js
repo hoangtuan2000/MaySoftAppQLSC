@@ -4,21 +4,23 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector, useDispatch } from 'react-redux'
 import {
     createFilterStatus, createFilterType, createFilterIncident,
-    createFilterDepartment, createFilterSearchKey, deleteAllFilters
+    createFilterDepartment, createFilterSearchKey, deleteAllFilters, createFilterPage
 } from '../../redux/filterReport/filterReportSlice'
 import SelectBox from 'react-native-multi-selectbox'
 
 function FiltersReportPage({ route, navigation }) {
 
     const dispatch = useDispatch()
+    const filterPage = useSelector((state) => state.filterReportRedux.filters.page)
     const filterStatus = useSelector((state) => state.filterReportRedux.filters.status)
     const filterType = useSelector((state) => state.filterReportRedux.filters.type)
     const filterIncident = useSelector((state) => state.filterReportRedux.filters.incident)
     const filterDepartment = useSelector((state) => state.filterReportRedux.filters.department)
     const filterSearchKey = useSelector((state) => state.filterReportRedux.filters.searchKey)
 
-    const { reportStatus, reportType, incidentObject, departments } = route.params
+    const { reportStatus, reportType, incidentObject, departments, totalReportPages } = route.params
 
+    const [selectPage, setSelectPage] = React.useState(filterPage)
     const [selectStatus, setSelectStatus] = React.useState(filterStatus)
     const [selectType, setSelectType] = React.useState(filterType)
     const [selectIncident, setSelectIncident] = React.useState(filterIncident)
@@ -68,10 +70,12 @@ function FiltersReportPage({ route, navigation }) {
         Object.keys(selectIncident).length > 0 ? dispatch(createFilterIncident(selectIncident)) : dispatch(createFilterIncident(''))
         Object.keys(selectDepartment).length > 0 ? dispatch(createFilterDepartment(selectDepartment)) : dispatch(createFilterDepartment(''))
         searchKey != '' ? dispatch(createFilterSearchKey(searchKey)) : dispatch(createFilterSearchKey(''))
+        dispatch(createFilterPage(selectPage))
         navigation.goBack()
     }
 
     const handlerDeleteFilters = () => {
+        setSelectPage({id: 1, item: 'Trang 1'})
         setSelectStatus({})
         setSelectType({})
         setSelectIncident({})
@@ -97,6 +101,21 @@ function FiltersReportPage({ route, navigation }) {
                         onChangeText={(value) => setSearchKey(value)}
                     />
                 </View>
+
+                {/* select filter report page */}
+                <SelectBox
+                    label="Chọn trang"
+                    options={totalReportPages}
+                    value={selectPage}
+                    onChange={(val) => setSelectPage(val)}
+                    hideInputFilter
+                    labelStyle={{
+                        fontSize: 15
+                    }}
+                    containerStyle={{
+                        marginBottom: 20
+                    }}
+                />
 
                 {/* select filter report status */}
                 <SelectBox

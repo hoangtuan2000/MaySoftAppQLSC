@@ -3,6 +3,11 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
   filterTime: [],
   filters: {
+    page: {
+      id: 1,
+      item: 'Trang 1'
+    },
+    limitEntry: 30,
     status: {},
     type: {},
     incident: {},
@@ -21,6 +26,9 @@ export const filterReportSlice = createSlice({
     deleteFilterTime: (state) => {
       state.filterTime = []
     },
+    createFilterPage: (state, action) => {
+      state.filters.page = action.payload
+    },
     createFilterStatus: (state, action) => {
       state.filters.status = action.payload
     },
@@ -37,6 +45,10 @@ export const filterReportSlice = createSlice({
       state.filters.searchKey = action.payload
     },
     deleteAllFilters: (state) => {
+      state.filters.page = {
+        id: 1,
+        item: 'Trang 1'
+      }
       state.filters.status = {}
       state.filters.type = {}
       state.filters.incident = {}
@@ -47,6 +59,6 @@ export const filterReportSlice = createSlice({
 })
 
 // Action creators are generated for each case reducer function
-export const { createFilterTime, deleteFilterTime, createFilterStatus, createFilterType, createFilterIncident, createFilterDepartment, createFilterSearchKey, deleteAllFilters } = filterReportSlice.actions
+export const { createFilterTime, deleteFilterTime, createFilterPage, createFilterStatus, createFilterType, createFilterIncident, createFilterDepartment, createFilterSearchKey, deleteAllFilters } = filterReportSlice.actions
 
 export default filterReportSlice.reducer

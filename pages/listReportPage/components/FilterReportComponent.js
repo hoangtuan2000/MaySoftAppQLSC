@@ -11,7 +11,7 @@ function FilterReport(
         navigation, filterTime, openDatePicker,
         showDatePicker, onCancel, onConfirm,
         reportStatus, reportType, incidentObject,
-        departments, filters
+        departments, filters, totalReportPages
     }
 ) {
 
@@ -73,7 +73,8 @@ function FilterReport(
                                     reportStatus: reportStatus,
                                     reportType: reportType,
                                     incidentObject: incidentObject,
-                                    departments: departments
+                                    departments: departments,
+                                    totalReportPages: totalReportPages
                                 }
                             })
                     }

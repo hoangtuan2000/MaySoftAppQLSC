@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux'
 
 import { getUserLogin } from '../../asyncStorage/userLogin'
 
-import { createFilterTime } from '../../redux/filterReport/filterReportSlice'
+import { createFilterTime, createFilterPage } from '../../redux/filterReport/filterReportSlice'
 import ShowReportComponent from './components/ShowReportComponent'
 import FilterReportComponent from './components/FilterReportComponent'
 
@@ -20,6 +20,7 @@ function ListReportPage({ navigation }) {
     const filters = useSelector((state) => state.filterReportRedux.filters)
     const dispatch = useDispatch()
 
+    const [totalReportPages, setTotalReportPages] = React.useState([])
     const [reports, setReports] = React.useState([])
     const [filterReports, setFilterReports] = React.useState([])
     const [incidentObject, setIncidentObject] = React.useState([])
@@ -46,7 +47,8 @@ function ListReportPage({ navigation }) {
     const getAllReports = () => {
         Axios.post('https://qlsc.maysoft.io/server/api/getAllReports',
             {
-                page: 1
+                page: filters.page.id,
+                limitEntry: filters.limitEntry
             },
             {
                 headers: {
@@ -57,12 +59,23 @@ function ListReportPage({ navigation }) {
                 if (res.status) {
                     setReports(res.data.data.data)
                     setFilterReports(res.data.data.data)
+                    let totalPages = Math.ceil(res.data.data.sizeQuerySnapshot / filters.limitEntry)
+                    let pages = []
+                    for (let i = 1; i <= totalPages; i++) {
+                        let object = {}
+                        object.id = i
+                        object.item = 'Trang ' + i
+                        pages.push(object)
+                    }
+                    setTotalReportPages(pages)
                 }
             })
             .catch((err) => {
                 console.log('err', err);
             })
     }
+
+    console.log('t', totalReportPages);
 
     const getCommon = () => {
         Axios.post('https://qlsc.maysoft.io/server/api/getCommon',
@@ -160,7 +173,8 @@ function ListReportPage({ navigation }) {
         ) {
 
             let multiFilters = {
-                page: 1
+                page: 1,
+                limitEntry: filters.limitEntry
             }
 
             Object.keys(filters.status).length != 0 ? multiFilters.status = filters.status.id : ''
@@ -178,6 +192,17 @@ function ListReportPage({ navigation }) {
                 })
                 .then((res) => {
                     setReports(res.data.data.data)
+                    //update total pages when filters
+                    let totalPages = Math.ceil(res.data.data.sizeQuerySnapshot / filters.limitEntry)
+                    let pages = []
+                    for (let i = 1; i <= totalPages; i++) {
+                        let object = {}
+                        object.id = i
+                        object.item = 'Trang ' + i
+                        pages.push(object)
+                    }
+                    setTotalReportPages(pages)
+                    dispatch(createFilterPage({id: 1, item: 'Trang 1'}))
                 })
                 .catch((err) => {
                     console.log('err', err);
@@ -206,6 +231,7 @@ function ListReportPage({ navigation }) {
                 incidentObject={incidentObject}
                 departments={departments}
                 filters={filters}
+                totalReportPages={totalReportPages}
             />
 
             {/* view show report */}
